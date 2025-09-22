@@ -238,9 +238,129 @@ public class Eyeballs : MonoBehaviour
 ```
 
 
+#### **Teleportation Code**
+
+Down below is the code to how Alice was able to get the teleportation mechanic to work.
+
+Teleportation Script
+```csharp
+
+using Unity.VisualScripting;
+using UnityEngine;
+
+public class teleportation : MonoBehaviour
+{
+    // Alice/JamesBellefeuille
+    // Start is called before the first frame update
+    void Start()
+    { // this gets portal potitions
+        portal1Pos = portal1.GetComponent<Transform>().position;
+        portal2Pos = portal2.GetComponent<Transform>().position;
+    }
+    Vector3 portal1Pos;
+    Vector3 portal2Pos;
+
+    [SerializeField] public Camera Cam; // this imports the camera
+
+    [SerializeField] public Object portal1;
+    [SerializeField] public Object portal2;
+
+    
+    bool portal1Placed = false; //this is to track if the portals have been placed
+    bool portal2Placed = false;
+
+    bool inPortal1 = false; // this is to track if the player  isin a portal
+    bool inPortal2 = false;
+
+    // Update is called once per frame
+    void Update()
+    {
+        // This checks if the player presses a button and if so runs portal placment
+        if(Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+        {
+            PortalPlacment();
+        }
+    }
+    public void PortalPlacment()
+    { 
+        // this fuction places the portals
+        RaycastHit hit;
+        Ray cast = Cam.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(cast, out hit))
+        { // this checks if the raycast hit and if so it save the position
+            Vector3 newPortalArea = hit.point; // this is where the new portal will be placed
+            if (Input.GetMouseButtonDown(0))
+            { // if you press the left mouse button this places a portal
+                portal1Pos = newPortalArea;
+                portal1.GetComponent<Transform>().position = portal1Pos;
+                portal1Placed = true;
+            }
+            else if (Input.GetMouseButtonDown(1))
+            { // if you press the right mouse button this places a portal
+                portal2Pos = newPortalArea;
+                portal2.GetComponent<Transform>().position = portal2Pos;
+                portal2Placed = true;
+            }
+        }
+        
+    }
+    private void OnTriggerEnter(Collider other)
+    { // this is for when you enter a portal to teleport the player to the other portal
+        bool portalsPlaced = portal1Placed && portal2Placed;
+        if (!inPortal1 && !inPortal2) // this checks that the player isnt in a portal atm
+        {
+            if (other.name == "portal1" && portalsPlaced)
+            { // if your in the first portal this teleports you to the second one
+                this.transform.position = portal2Pos;
+                inPortal2 = true; // after going through a portal this makes it so you wont teleport back and forth constantly
+
+            }
+            else if (other.name == "portal2" && portalsPlaced)
+            { // if your in the second portal this teleports you to the first one
+                this.transform.position = portal1Pos;
+                inPortal1 = true;
+            }
+        }
+        
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        // this renables the portals when you leave a portal
+        if (other.name == "portal1")
+        {
+            inPortal1 = false;
+
+        }
+        else if (other.name == "portal2")
+        {
+            inPortal2 = false;
+        }
+
+    }
+}
+
+```
+
+Using raycasts from the camera the player can left or right click on their mouse to place down a portal at the position where you aimed at. Once both are activated inside of the level, entering one instantly teleports the player to the other. 
+
+**How It Now Works**
+
+Players can place portals using left or right mouse button. Entering one portal instantly moves the player to the other portal placed down. OnTriggerEnter/Exit handles the teleport activation. Right now portals can be placed anywhere but only look the correct way if angled at a wall 0°, or 90° rotations. Surfaces on other angles do not properly orient the portals visuals. Overall throughout testing we found out that the teleportation mechanic works quite well without any real bugs or glitches. This has confirmed our core function works, but also shows us what we could do next if we wanted to move forward. 
 
 
+#### **Out of Scope / Possible Future Work**
+
+- It would be nice to have a render of the world through the portal, sort of a looking through the other room effect
+- Keeping momentum when going through the portals could also be cool to try and implement one day
+- UI indicators showing us which portals are active and where they currently are on the map (Like a bright glow around the portal you can see through walls)
+
+All these ideas would be really cool to try and implement however will take too much time to develop as we have only so much time.
 
 
+#### **Sources / Assets**
 
-
+- [Unity Asset Store](https://assetstore.unity.com/)
+- [Cool Visual Effects - Part 1 - URP Support](https://assetstore.unity.com/packages/vfx/particles/cool-visual-effects-part-1-urp-support-176571)
+- [Simple Modular Castle Assets](https://assetstore.unity.com/packages/3d/props/simple-modular-castle-assets-309297)
+- .[gitattributes Used Reference](https://gist.github.com/nemotoo/b8a1c3a0f1225bb9231979f389fd4f3f) 
