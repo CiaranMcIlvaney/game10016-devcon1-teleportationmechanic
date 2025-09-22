@@ -1,9 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class teleportation : MonoBehaviour
 {
@@ -17,16 +13,16 @@ public class teleportation : MonoBehaviour
     Vector3 portal1Pos;
     Vector3 portal2Pos;
 
-    public Camera Cam; // this imports the camera
+    [SerializeField] public Camera Cam; // this imports the camera
 
-    public Object portal1;
-    public Object portal2;
+    [SerializeField] public Object portal1;
+    [SerializeField] public Object portal2;
 
     
     bool portal1Placed = false; //this is to track if the portals have been placed
     bool portal2Placed = false;
 
-    bool inPortal1 = false; // this is to track if the player is in a portal
+    bool inPortal1 = false; // this is to track if the player  isin a portal
     bool inPortal2 = false;
 
     // Update is called once per frame
@@ -81,8 +77,6 @@ public class teleportation : MonoBehaviour
         }
         
     }
-
-
     private void OnTriggerExit(Collider other)
     {
         // this renables the portals when you leave a portal
